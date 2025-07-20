@@ -1,0 +1,295 @@
+<?php
+include '../includes/auth_check.php';
+include '../includes/db.php';
+
+if ($_SESSION['role'] !== 'admin') {
+    header("Location: ../login_admin.php");
+    exit();
+}
+
+if (isset($_GET['product_id'])) {
+    $product_id = $_GET['product_id'];
+    // Fetch product info for display
+    $stmt = $pdo->prepare("SELECT product_id, product_name FROM products WHERE id = ?");
+    $stmt->execute([$product_id]);
+    $product = $stmt->fetch();
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $v1 = isset($_POST['voltage_level']) ? 1 : 0;
+        $v2 = isset($_POST['voltage_stability']) ? 1 : 0;
+        $v3 = isset($_POST['voltage_spike_protection']) ? 1 : 0;
+        $status = $_POST['status'];
+        $remarks = $_POST['remarks'];
+        $tested_by = $_SESSION['username'] ?? $_SESSION['admin_id'];
+
+        $sql = "INSERT INTO voltage_tests (product_id, voltage_level, voltage_stability, voltage_spike_protection, status, remarks, tested_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$product_id, $v1, $v2, $v3, $status, $remarks, $tested_by]);
+
+        header("Location: test_heat.php?product_id=$product_id");
+        exit;
+    }
+    ?>
+    <?php include '../includes/header.php'; ?>
+    <style>
+body {
+  background: linear-gradient(135deg, #e3e6f0 0%, #b2bec3 100%);
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+.test-form-title {
+  color: #263859;
+  font-weight: 900;
+  font-size: 2.2rem;
+  letter-spacing: 1px;
+  margin-bottom: 2.7rem;
+  margin-top: 2.7rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+.voltage-form-card {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 8px 32px 0 rgba(44, 62, 80, 0.16);
+  padding: 2.2rem 2rem 2rem 2rem;
+  max-width: 520px;
+  margin: 0 auto;
+  border: 2px solid #e3e6f0;
+}
+.custom-checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-weight: 700;
+  color: #263859;
+  font-size: 1.13rem;
+  margin-bottom: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.custom-checkbox input[type="checkbox"] {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #4a69bd;
+  border-radius: 6px;
+  background: #f4f6fb;
+  margin-right: 8px;
+  position: relative;
+  transition: border-color 0.2s, background 0.2s;
+}
+.custom-checkbox input[type="checkbox"]:checked {
+  background: #4a69bd;
+  border-color: #263859;
+}
+.custom-checkbox input[type="checkbox"]:checked:after {
+  content: '\2714';
+  color: #fff;
+  font-size: 1.1rem;
+  position: absolute;
+  left: 3px;
+  top: 0px;
+}
+.custom-checkbox input[type="checkbox"]:focus {
+  outline: 2px solid #4a69bd;
+}
+.form-control, .form-select {
+  background: #f4f6fb;
+  color: #263859;
+  border: 1.5px solid #b2bec3;
+  border-radius: 12px;
+  font-size: 1.13rem;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.3rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #4a69bd;
+  box-shadow: 0 0 0 2px #4a69bd33;
+  background: #e3e6f0;
+  color: #263859;
+}
+.btn-primary {
+  background: linear-gradient(90deg, #263859 60%, #4a69bd 100%);
+  border: none;
+  border-radius: 12px;
+  font-weight: 800;
+  padding: 1.1rem;
+  font-size: 1.18rem;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  margin-top: 0.7rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: linear-gradient(90deg, #4a69bd 60%, #263859 100%);
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
+  transform: translateY(-2px) scale(1.03);
+  color: #fff;
+}
+.voltage-product-info {
+  font-weight: 700;
+  color: #4a69bd;
+  font-size: 1.13rem;
+  margin-bottom: 1.7rem;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+@media (max-width: 700px) {
+  .test-form-title {
+    font-size: 1.3rem;
+    margin-top: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+  .voltage-form-card {
+    padding: 1.1rem 0.5rem;
+    max-width: 100%;
+  }
+  .custom-checkbox {
+    font-size: 1rem;
+  }
+}
+    </style>
+    <div class="container py-4">
+      <div class="test-form-title mb-4 justify-content-center"><i class="bi bi-lightning-charge"></i> Voltage Test</div>
+      <div class="voltage-form-card">
+        <div class="voltage-product-info">
+          Product: <?= htmlspecialchars($product['product_name']) ?> (ID: <?= htmlspecialchars($product['product_id']) ?>)
+        </div>
+        <form method="POST">
+          <div class="mb-3">
+            <label class="custom-checkbox">
+              <input type="checkbox" name="voltage_level"> Voltage Level is Normal
+            </label>
+          </div>
+          <div class="mb-3">
+            <label class="custom-checkbox">
+              <input type="checkbox" name="voltage_stability"> Voltage Stability
+            </label>
+          </div>
+          <div class="mb-3">
+            <label class="custom-checkbox">
+              <input type="checkbox" name="voltage_spike_protection"> Spike Protection Working
+            </label>
+          </div>
+          <div class="mb-3">
+            <label>Status</label>
+            <select name="status" required class="form-select">
+              <option value="">Select</option>
+              <option value="Pass">Pass</option>
+              <option value="Fail">Fail</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label>Remarks</label>
+            <textarea name="remarks" class="form-control" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check-circle"></i> Submit and Go to Heat Test</button>
+        </form>
+      </div>
+    </div>
+    <?php include '../includes/footer.php'; ?>
+    <?php
+    exit;
+}
+
+// If no product_id, show product selection form
+$stmt = $pdo->query("SELECT id, product_id, product_name FROM products");
+$products = $stmt->fetchAll();
+?>
+<?php include '../includes/header.php'; ?>
+<style>
+body {
+  background: linear-gradient(135deg, #e3e6f0 0%, #b2bec3 100%);
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+.test-form-title {
+  color: #263859;
+  font-weight: 900;
+  font-size: 2rem;
+  letter-spacing: 1px;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 2.5rem;
+}
+label {
+  font-weight: 700;
+  color: #263859;
+  font-size: 1.09rem;
+  margin-bottom: 8px;
+}
+.form-control, .form-select {
+  background: #f4f6fb;
+  color: #263859;
+  border: 1.5px solid #b2bec3;
+  border-radius: 12px;
+  font-size: 1.09rem;
+  padding: 0.95rem 1.1rem;
+  margin-bottom: 1.2rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #4a69bd;
+  box-shadow: 0 0 0 2px #4a69bd33;
+  background: #e3e6f0;
+  color: #263859;
+}
+.btn-primary {
+  background: linear-gradient(90deg, #263859 60%, #4a69bd 100%);
+  border: none;
+  border-radius: 12px;
+  font-weight: 800;
+  padding: 1rem;
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  margin-top: 0.7rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: linear-gradient(90deg, #4a69bd 60%, #263859 100%);
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
+  transform: translateY(-2px) scale(1.03);
+  color: #fff;
+}
+@media (max-width: 700px) {
+  .test-form-title {
+    font-size: 1.3rem;
+  }
+}
+</style>
+<div class="container py-4">
+  <div class="test-form-title mb-4"><i class="bi bi-lightning-charge"></i> Voltage Test</div>
+  <form action="test_voltage.php" method="GET" style="max-width:500px;margin:0 auto;">
+    <div class="mb-3">
+      <label>Select Product <span class="text-danger">*</span></label>
+      <select name="product_id" required class="form-select">
+        <option value="" disabled selected>Select Product</option>
+        <?php foreach ($products as $p): ?>
+          <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['product_name']) ?> (ID: <?= $p['product_id'] ?>)</option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-arrow-right-circle"></i> Start Test</button>
+  </form>
+</div>
+<?php include '../includes/footer.php'; ?>
