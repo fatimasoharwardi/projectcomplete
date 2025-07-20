@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 21, 2025 at 03:36 AM
+-- Generation Time: Jul 21, 2025 at 03:44 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,83 @@ SET time_zone = "+00:00";
 --
 -- Database: `srs_testing`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `contact_messages`
+--
+
+CREATE TABLE `contact_messages` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `subject` varchar(255) DEFAULT NULL,
+  `message` text DEFAULT NULL,
+  `sent_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `contact_messages`
+--
+
+INSERT INTO `contact_messages` (`id`, `user_id`, `name`, `email`, `subject`, `message`, `sent_at`) VALUES
+(1, 7, 'fatima', 'fatima@gmail.com', 'drtfygu', 'fatima', '2025-07-19 05:01:20'),
+(2, 9, 'fatima', 'fatima@gmail.com', 'drtfygu', 'fatima', '2025-07-19 05:02:44'),
+(3, 7, 'tywuejadx', 'xrth@gmail.com', 'xrn', 'dhxfcjgvhb,jn.m,. xrctfgyujhm, tdfyguhijm cdfguhjm ctyujh', '2025-07-20 00:59:16'),
+(4, 9, 'tywuejadx', 'xrth@gmail.com', 'xrn', 'dhxfcjgvhb,jn.m,. xrctfgyujhm, tdfyguhijm cdfguhjm ctyujh', '2025-07-20 01:08:30');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `durability_tests`
+--
+
+CREATE TABLE `durability_tests` (
+  `id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `drop_test` tinyint(1) DEFAULT NULL,
+  `water_resistance` tinyint(1) DEFAULT NULL,
+  `material_strength` tinyint(1) DEFAULT NULL,
+  `status` enum('Pass','Fail') DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `tested_by` varchar(100) DEFAULT NULL,
+  `tested_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `durability_tests`
+--
+
+INSERT INTO `durability_tests` (`id`, `product_id`, `drop_test`, `water_resistance`, `material_strength`, `status`, `remarks`, `tested_by`, `tested_at`) VALUES
+(1, 2, 0, 1, 1, 'Fail', 'tfyu', NULL, '2025-07-18 22:20:47');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `heat_tests`
+--
+
+CREATE TABLE `heat_tests` (
+  `id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `heat_resistance` tinyint(1) DEFAULT NULL,
+  `temperature_tolerance` tinyint(1) DEFAULT NULL,
+  `overheating_protection` tinyint(1) DEFAULT NULL,
+  `status` enum('Pass','Fail') DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `tested_by` varchar(100) DEFAULT NULL,
+  `tested_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `heat_tests`
+--
+
+INSERT INTO `heat_tests` (`id`, `product_id`, `heat_resistance`, `temperature_tolerance`, `overheating_protection`, `status`, `remarks`, `tested_by`, `tested_at`) VALUES
+(1, 2, 1, 1, 0, 'Pass', 'ctfyhij', NULL, '2025-07-18 22:20:39'),
+(2, 4, 0, 0, 0, 'Pass', '', NULL, '2025-07-19 17:49:48');
 
 -- --------------------------------------------------------
 
@@ -133,9 +210,56 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`, `c
 (8, 'alisha', 'alisha@gmail.com', '123', 'manufacturer', '2025-07-12 18:23:20', '', '687c45bdba939_How to draw a Girl Mask with cap -Hide Face Drawing __ Pencil sketch for beginner __ Girl drawing.jpg', NULL, '', '976421', '', '', '', '97653285', 'Male', '0000-00-00'),
 (9, 'Admin', 'admin@example.com', 'admin123', 'admin', '2025-07-12 18:28:12', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `voltage_tests`
+--
+
+CREATE TABLE `voltage_tests` (
+  `id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `voltage_level` tinyint(1) DEFAULT NULL,
+  `voltage_stability` tinyint(1) DEFAULT NULL,
+  `voltage_spike_protection` tinyint(1) DEFAULT NULL,
+  `status` enum('Pass','Fail') DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
+  `tested_by` varchar(100) DEFAULT NULL,
+  `tested_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `voltage_tests`
+--
+
+INSERT INTO `voltage_tests` (`id`, `product_id`, `voltage_level`, `voltage_stability`, `voltage_spike_protection`, `status`, `remarks`, `tested_by`, `tested_at`) VALUES
+(1, 2, 1, 0, 1, 'Pass', 'fx', NULL, '2025-07-18 22:20:32'),
+(2, 4, 0, 0, 0, 'Pass', '', NULL, '2025-07-19 17:48:36');
+
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `contact_messages`
+--
+ALTER TABLE `contact_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `durability_tests`
+--
+ALTER TABLE `durability_tests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
+-- Indexes for table `heat_tests`
+--
+ALTER TABLE `heat_tests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `product_id` (`product_id`);
 
 --
 -- Indexes for table `products`
@@ -162,8 +286,33 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
+-- Indexes for table `voltage_tests`
+--
+ALTER TABLE `voltage_tests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `contact_messages`
+--
+ALTER TABLE `contact_messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `durability_tests`
+--
+ALTER TABLE `durability_tests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `heat_tests`
+--
+ALTER TABLE `heat_tests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -184,8 +333,32 @@ ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
+-- AUTO_INCREMENT for table `voltage_tests`
+--
+ALTER TABLE `voltage_tests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `contact_messages`
+--
+ALTER TABLE `contact_messages`
+  ADD CONSTRAINT `contact_messages_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `durability_tests`
+--
+ALTER TABLE `durability_tests`
+  ADD CONSTRAINT `durability_tests_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
+
+--
+-- Constraints for table `heat_tests`
+--
+ALTER TABLE `heat_tests`
+  ADD CONSTRAINT `heat_tests_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
 
 --
 -- Constraints for table `products`
@@ -198,6 +371,12 @@ ALTER TABLE `products`
 --
 ALTER TABLE `tests`
   ADD CONSTRAINT `fk_test_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `voltage_tests`
+--
+ALTER TABLE `voltage_tests`
+  ADD CONSTRAINT `voltage_tests_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
